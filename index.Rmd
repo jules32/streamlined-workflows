@@ -29,6 +29,18 @@ We all take an active role in making RLadies a positive learning environment.
 --->
 
 ---
+class: center, inverse, middle
+# Streamlined workflows in R
+## (tips from usethis, here, and more)
+
+**[@juliesquid](https://twitter.com/juliesquid)**  
+
+**[@RLadiesSB](https://twitter.com/rladiessb)**  
+
+**[jules32.github.io/streamlined-workflows](https://jules32.github.io/streamlined-workflows)**
+
+
+---
 # Today's goals
 
 Showcase good practices for beginning and seasoned R users alike.  
@@ -102,7 +114,8 @@ knitr::include_graphics("images/if-you-liked-it-you-should-have-saved-the-source
 ---
 # Save the source, not the workspace.
 
-Save the code that created the object, aka "source code"; do not save the object itself. 
+Save the code that created the object, aka "source code"; do not save the object itself. When working with R, save your commands in a `.R` file ("script"), or in `.Rmd` ("R Markdown document"). It doesn't have to be polished. Just save it!
+
 
 
 <!--- this also works: 
@@ -114,8 +127,9 @@ Save the code that created the object, aka "source code"; do not save the object
 knitr::include_graphics("images/rstudio-source.png")
 ```
 
-
 --
+
+  
   
 - Everything that really matters should be achieved through code that you save – including objects and figures
   - The contrast is storing them implicitly or explicitly, as part of an entire workspace, or saving them via the mouse.  
@@ -124,13 +138,10 @@ knitr::include_graphics("images/rstudio-source.png")
 
 - Saving code is an absolute requirement for reproducibility.
 
-- Renouncing `.Rdata` and restarting R provide constant pressure for you to do the right thing.
+- Renouncing `.Rdata` and restarting R constantly pressure you to do the right thing.
 
 ---
 # Use an IDE
-(integrated development environment)
-
-When working with R, save your commands in a `.R` file ("script"), or in `.Rmd` ("R Markdown document"). It doesn't have to be polished. Just save it!
 
 An [integrated development environment](https://en.wikipedia.org/wiki/Integrated_development_environment) (IDE) is critical for making this workflow pleasant. 
 
@@ -290,15 +301,39 @@ p <- ggplot(df, aes(x, y)) + geom_point()
 ggsave("figs/foofy_scatterplot.png")
 ```
 
-
 ---
 
 # setwd() — compare:
 
-Way more ideal:
-
+```{r unideal2, eval = FALSE}
+# unideal
+library(ggplot2)
+setwd("/Users/jenny/cuddly_broccoli/verbose_funicular/foofy/data")
+df <- read.delim("raw_foofy_data.csv")
+p <- ggplot(df, aes(x, y)) + geom_point()
+ggsave("../figs/foofy_scatterplot.png")
 ```
-here::here()
+
+
+```{r less unideal2, eval = FALSE}
+#less unideal
+setwd("/Users/jenny/cuddly_broccoli/verbose_funicular/foofy")
+    
+library(ggplot2)
+df <- read.delim("data/raw_foofy_data.csv")
+p <- ggplot(df, aes(x, y)) + geom_point()
+ggsave("figs/foofy_scatterplot.png")
+```
+
+
+```{r, eval=FALSE}
+# way more ideal
+library(ggplot2)
+library(here)
+
+df <- read.delim(here("data", "raw_foofy_data.csv"))
+p <- ggplot(df, aes(x, y)) + geom_point()
+ggsave(here("figs", "foofy_scatterplot.png"))
 ```
 
 
@@ -319,7 +354,7 @@ You can design this particular aggravation out of your life.
 
 
 ---
-background-image: url("images/leslie-knope")
+background-image: url("images/projects-leslie-knope.png")
 background-size: 50% 50%
 class: center, inverse
 <!---https://www.w3schools.com/cssref/css3_pr_background-size.asp--->
@@ -394,9 +429,9 @@ Double-click on a `.Rproj` file to open a fresh instance of RStudio, with the wo
  
 You can have multiple Projects going at once!
 
-This--
+--
 
- allows rapid context switching across several projects, such as an R package, teaching material, and a data analysis. There is no danger of crosstalk between the projects: each has its own R process, global workspace, and working directory.
+This allows rapid context switching across several projects, such as an R package, teaching material, and a data analysis. There is no danger of crosstalk between the projects: each has its own R process, global workspace, and working directory.
 
 
 ```{r out.width = '100%', echo = FALSE}
@@ -416,7 +451,7 @@ If you have One Main Place for Projects, then go there in Finder/File Explorer t
 ]
 
 .pull-right[
-```{r out.width = '80%', echo = FALSE}
+```{r out.width = '90%', echo = FALSE}
 knitr::include_graphics("images/github-folder.png")
 ```
 
@@ -432,10 +467,11 @@ knitr::include_graphics("images/github-folder-subfolders.png")
 ```
 
 
+
 ---
 
-# Tr
-icks for opening Projects
+# Tricks for opening Projects
+
 
 Once you decide "I want to do some work in Project K", there are various ways to accelerate the startup process. 
 
@@ -500,21 +536,14 @@ In fact, it will even work if R’s working directory is anywhere inside the pro
 
 Constraint: Our workflow (`ohicore` package) requires having the working directory set to a subfolder, e.g. `bhi/baltic`. 
 
--- 
-
 But setting relative paths wouldn’t work for our users
-
--- 
 
 And RMarkdown files are not always launched from the Console's working directory
 
--- 
 
 Our solution: We set up a convention everyone had to follow: Create a `~/github/` folder in their root directory
 
 So all our script could say `setwd(“~/github/bhi/baltic”)` 
-
--- 
 
 Now, transitioning to `setwd(here(“baltic”))`
 
@@ -523,19 +552,39 @@ Not really the intent of `here`, but iterative steps towards better practice
 ---
 # OHI Team musings: why would you use `here` if you already use .Rproj?
 
-- Makes it less ambiguous about where things are/what is going on 
-  - as opposed to `../../../somewhere/`
+Makes it less ambiguous about where things are/what is going on 
+
+- as opposed to `../../../somewhere/`
 
 --
 
-- We sometimes work between Projects
-  - could move away from convention of having a folder named `~/github/`
-  - `here("..", "esw")` could help between Mac/PC slashes
-  - `set_here()` is not the same as `setwd(here())` — could this be a way forward?
+We sometimes work between Projects
+
+- could move away from convention of having a folder named `~/github/`
+- `here("..", "esw")` could help between Mac/PC slashes
+- `set_here()` is not the same as `setwd(here())` — could this be a way forward?
 
 --  
   
 Also, if using `here` and `.Rproj` is redundant, that's better than being unprepared...you will collaborate with people who don't use `.Rproj` but you could alleviate filepath woes this way as a starting point
+
+---
+# But then, Twitter
+
+```{r out.width = '60%', echo = FALSE}
+knitr::include_graphics("images/why-use-here-rproj-twitter.png")
+```
+
+
+
+---
+# But then, Twitter
+
+
+<center><img src="images/why-use-here-rproj-blog.png" width="500px"></center>
+
+
+**<https://malco.io/2018/11/05/why-should-i-use-the-here-package/>**
 
 ---
 #  Naming files
@@ -581,6 +630,7 @@ A few `usethis` functions have no strong connections to projects and will expect
 `usethis` is quite chatty, explaining what it’s doing and assigning you tasks. ✔ indicates something usethis has done for you. ● indicates that you’ll need to do some work yourself.
 
 ---
+
 # Configure Git
 
 ```{r, eval=FALSE}
@@ -588,8 +638,11 @@ A few `usethis` functions have no strong connections to projects and will expect
 use_git_config(user.name = "Jane", user.email = "jane@example.org")
 ```
 
---- 
+---
+
 # Identify contributors via GitHub activity
+
+Live demo:
 
 ```{r, eval=FALSE}
 usethis::use_tidy_thanks("openscapes/demo")
@@ -597,7 +650,8 @@ usethis::use_tidy_thanks("openscapes/demo")
 
 <https://github.com/Openscapes/demo/graphs/contributors>
 
---- 
+---
+
 # Add an RMarkdown Template
 
 Adds files and directories necessary to add a custom rmarkdown template to RStudio. It creates:
@@ -606,12 +660,14 @@ Adds files and directories necessary to add a custom rmarkdown template to RStud
 - `skeleton/skeleton.Rmd`. Your template Rmd file.
 - `template.yml` with basic information filled in.
 
+Live demo:
 
 ```{r, eval=FALSE}
 usethis::use_rmarkdown_template()
 ```
 
 ---
+
 # Create README files
 
 Live demo:
@@ -626,9 +682,12 @@ And, let's make a README.Rmd and learn why we would ever want to:
 usethis::use_readme_rmd()
 ```
 
---- 
+---
+
 # Add a Code of Conduct
  
+Live demo:
+
 ```{r, eval=FALSE}
 usethis::use_tidy_coc()
 ```
@@ -659,12 +718,11 @@ To streamline your workflows in R:
 
 - April — let's meetup for a drink or a hike. Want to organize?
 - May - what about SOMETHING COOL by YOU?
-- Summer: Wikipedia with Joan Dudney!
+- Summer: Wikipedia/500 Women Scientists with Joan Dudney!
 
 This is you 👇
-```{r
 
- out.width = '70%', echo = FALSE}
+```{r out.width = '70%', echo = FALSE}
 knitr::include_graphics("https://media.giphy.com/media/1SWiahmI5bbi0/giphy.gif")
 ```
 
