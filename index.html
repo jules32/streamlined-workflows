@@ -81,7 +81,7 @@ To streamline your workflows in R:
 3. Organize work into Projects
   - Use an IDE
   - Name files deliberately 
-  - Filepaths (reprise)  
+  - Filepaths with `here` (reprise)  
 4. (Bonus) `usethis`
   - Configure git
   - Create template READMEs and Rmds
@@ -109,14 +109,16 @@ Save the code that created the object, aka "source code"; do not save the object
 ---&gt;
 
 
-&lt;img src="images/dont-save-workspace.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="images/rstudio-source.png" width="40%" style="display: block; margin: auto;" /&gt;
+
 
 --
   
-  
 - Everything that really matters should be achieved through code that you save – including objects and figures
   - The contrast is storing them implicitly or explicitly, as part of an entire workspace, or saving them via the mouse.  
-  
+
+--
+
 - Saving code is an absolute requirement for reproducibility.
 
 - Renouncing `.Rdata` and restarting R provide constant pressure for you to do the right thing.
@@ -315,7 +317,7 @@ You can design this particular aggravation out of your life.
 
 
 ---
-background-image: url("https://media.giphy.com/media/1SWiahmI5bbi0/giphy.gif")
+background-image: url("images/leslie-knope")
 background-size: 50% 50%
 class: center, inverse
 &lt;!---https://www.w3schools.com/cssref/css3_pr_background-size.asp---&gt;
@@ -361,8 +363,6 @@ Here's what I mean by "work in a project":
 
 Synergistic habits: you'll get the biggest payoff if you practice all of them together.
 
---
-
 Portability: the project can be moved around on your computer or onto other computers and will still "just work".This is the only practical convention that creates **reliable, polite behavior** across different computers/users/time. This convention is neither new, nor unique to R.
 
 --
@@ -374,7 +374,15 @@ It's like agreeing that we will all drive on the left or the right. A hallmark o
 
 The RStudio IDE has a notion of a (capital "P") [Project](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects), which is a very effective implementation of the (small "p") projects described above. 
 
+--
+
+They are the same “unit” as a GitHub repo!
+
+--
+
 You can designate a new or existing folder as a Project. All this means is that RStudio leaves a file, e.g., `foofy.Rproj`, in the folder, which is used to store settings specific to that project. Use *File &gt; New Project ...* to get started.
+
+--
 
 Double-click on a `.Rproj` file to open a fresh instance of RStudio, with the working directory and file browser pointed at the project folder.
   
@@ -384,9 +392,9 @@ Double-click on a `.Rproj` file to open a fresh instance of RStudio, with the wo
  
 You can have multiple Projects going at once!
 
-This allows rapid context switching across several projects, such as an R package, teaching material, and a data analysis. There is no danger of crosstalk between the projects: each has its own R process, global workspace, and working directory.
+This--
 
-And, it's the same “unit” as a GitHub repo!
+ allows rapid context switching across several projects, such as an R package, teaching material, and a data analysis. There is no danger of crosstalk between the projects: each has its own R process, global workspace, and working directory.
 
 
 &lt;img src="images/multiple-rstudio-projects.png" width="100%" /&gt;
@@ -396,14 +404,30 @@ And, it's the same “unit” as a GitHub repo!
 
 One suggestion for organizing:
 
-**Have a dedicated folder for your Projects.**  
-Jenny: `~/rrr/`.   
-Julie: `~/github/`.  
+.pull-left[**Have a dedicated folder for your Projects.**  
+- Jenny: `~/rrr/`.   
+- Julie: `~/github/`.  
 
 If you have One Main Place for Projects, then go there in Finder/File Explorer to launch any specific project with `.Rproj`.
+]
+
+.pull-right[
+&lt;img src="images/github-folder.png" width="80%" /&gt;
+
+]
 
 ---
-# Tricks for opening Projects
+# Where to keep Projects
+
+I'm also toying with this idea: sub-organization by GitHub User/Organization. 
+
+&lt;img src="images/github-folder-subfolders.png" width="80%" /&gt;
+
+
+---
+
+# Tr
+icks for opening Projects
 
 Once you decide "I want to do some work in Project K", there are various ways to accelerate the startup process. 
 
@@ -420,9 +444,10 @@ Use the "arrow and paper" icon to open a Project in a separate RStudio instance,
 ---
 background-image: url("images/here.png")
 background-position: center
-background-size: 75% 75%
+background-size: 60% 60%
 class: center, inverse, bottom
 
+# 4. here
 
 ---
 # `here`
@@ -450,7 +475,7 @@ here()
 
 If you want to understand why, use `dr_here()`.  
 
-If you need to set it manually, use `set_here()`.
+If you need to set a place manually, use `set_here()`.
 
 Those are the only 3 functions in the `here()` package.
 
@@ -476,37 +501,60 @@ In fact, it will even work if R’s working directory is anywhere inside the pro
 ---
 # `here` example: Ocean Health Index
 
-Constraint: Our R package that all OHI users use must be run from a subdirectory; in this case `esw/esw2018`
+Constraint: Our workflow (`ohicore` package) requires having the working directory set to a subfolder, e.g. `bhi/baltic`. 
+
+-- 
+
+But setting relative paths wouldn’t work for our users
+
+-- 
+
+And RMarkdown files are not always launched from the Console's working directory
+
+-- 
+
+Our solution: We set up a convention everyone had to follow: Create a `~/github/` folder in their root directory
+
+So all our script could say `setwd(“~/github/bhi/baltic”)` 
+
+-- 
+
+Now, transitioning to `setwd(here(“baltic”))`
+
+Not really the intent of `here`, but iterative steps towards better practice
+
+---
+# OHI Team musings: why would you use `here` if you already use .Rproj?
+
+- Makes it less ambiguous about where things are/what is going on 
+  - as opposed to `../../../somewhere/`
 
 --
 
-Baby steps — and definitely not the intended use but this is our reality:
+- We sometimes work between Projects
+  - could move away from convention of having a folder named `~/github/`
+  - `here("..", "esw")` could help between Mac/PC slashes
+  - `set_here()` is not the same as `setwd(here())` — could this be a way forward?
 
-```r
-setwd(here::here('esw2018'))
-```
-
---
-
-is a huge leap forward from 
-
-```r
-setwd('~/github/esw/esw2018'))
-```
-
-But this way actually did serve us well for years, provided that everyone created this `~/github/` folder in their root directory.
+--  
+  
+Also, if using `here` and `.Rproj` is redundant, that's better than being unprepared...you will collaborate with people who don't use `.Rproj` but you could alleviate filepath woes this way as a starting point
 
 ---
-# `here` example: Ocean Health Index
-
-`here` is useful for us when we are working outside of projects. 
-
----
-background-image: url("images/bryan-naming-files.png")
-background-size: 50% 50%
-class: center
-
 #  Naming files
+Available from [Speakerdeck](https://speakerdeck.com/jennybc/how-to-name-files) or [download pdf](http://www2.stat.duke.edu/~rcs46/lectures_2015/01-markdown-git/slides/naming-slides/naming-slides.pdf)
+
+.pull-left[
+&lt;img src="images/bryan-naming-files.png" width="80%" /&gt;
+]
+
+.pull-right[
+Jenny Bryan’s 3 rules for Naming Things:
+
+- machine readable
+- human readable
+- plays well with default ordering
+]
 
 
 ---
@@ -515,7 +563,26 @@ class: center, inverse, middle
 # 4. Tips from `usethis`
 
 ---
-## Configure Git
+# `usethis`
+
+From &lt;https://usethis.r-lib.org/index.html&gt;:
+
+`usethis` is a workflow package: it automates repetitive tasks that arise during project setup and development, both for R packages and non-package projects.
+
+--
+
+Most `use_*()` functions operate on the active project: literally, a directory on your computer. 
+
+--
+
+A few `usethis` functions have no strong connections to projects and will expect you to provide a path.
+
+--
+
+`usethis` is quite chatty, explaining what it’s doing and assigning you tasks. ✔ indicates something usethis has done for you. ● indicates that you’ll need to do some work yourself.
+
+---
+# Configure Git
 
 
 ```r
@@ -523,18 +590,17 @@ class: center, inverse, middle
 use_git_config(user.name = "Jane", user.email = "jane@example.org")
 ```
 
--- 
+--- 
+# Identify contributors via GitHub activity
 
-## Identify contributors via GitHub activity
 
-{r, eval=FALSE}
+```r
 usethis::use_tidy_thanks("openscapes/demo")
-
+```
 
 &lt;https://github.com/Openscapes/demo/graphs/contributors&gt;
 
--- 
-
+--- 
 # Add an RMarkdown Template
 
 Adds files and directories necessary to add a custom rmarkdown template to RStudio. It creates:
@@ -546,15 +612,10 @@ Adds files and directories necessary to add a custom rmarkdown template to RStud
 
 
 ```r
-usethis::use_tidyrmarkdown_template()
+usethis::use_rmarkdown_template()
 ```
 
-
 ---
-# Use your new RMarkdown template
-
----
-
 # Create README files
 
 Live demo:
@@ -572,22 +633,47 @@ usethis::use_readme_rmd()
 ```
 
 --- 
-
 # Add a Code of Conduct
  
 
+```r
 usethis::use_tidy_coc()
+```
 
 ---
 # Summary
+To streamline your workflows in R:
 
+1. Save the source, not the workspace 
+  - Always start R with a blank slate
+  - Restart R often
+  - Avoid `rm(list = ls())`
+2. Filepaths
+  - Avoid `setwd("path/that/only/works/on/my/machine")`
+  - Use `here`
+3. Organize work into Projects
+  - Use an IDE
+  - Name files deliberately 
+  - Filepaths with `here` (reprise)  
+4. (Bonus) `usethis`
+  - Configure git
+  - Create template READMEs and Rmds
+  - Thank contributors
+  - Add a Code of Conduct
 
 ---
 # Next RLadies Meetup
 
-- April — let's meetup for a drink or a hike
-- May - led about SOMETHING COOL by YOU?
-- July or August: Wikipedia with Joan Dudney!
+- April — let's meetup for a drink or a hike. Want to organize?
+- May - what about SOMETHING COOL by YOU?
+- Summer: Wikipedia with Joan Dudney!
+
+This is you 👇
+```{r
+
+ out.width = '70%', echo = FALSE}
+knitr::include_graphics("https://media.giphy.com/media/1SWiahmI5bbi0/giphy.gif")
+```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
